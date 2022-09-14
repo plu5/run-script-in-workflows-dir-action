@@ -1,0 +1,31 @@
+name: 'Run Script in Workflows Dir'
+author: 'plu5'
+description: >-
+  This GitHub action sets permissions and runs a script in .github/workflows
+inputs:
+  script:
+    description: 'Your script. It needs to be in the same directory as your action, or a relative path from .github/workflows/.'
+    required: true
+  args:
+    description: 'Arguments to pass to the script, separated by space.'
+    required: false
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set permissions on the script file
+      env:
+        ENV_SCRIPT: ${{ github.workspace }}/.github/workflows/${{ inputs.script }}
+      run: |
+        chmod 777 "${ENV_SCRIPT}"
+      shell: bash
+
+    - env:
+        ENV_SCRIPT: ${{ github.workspace }}/.github/workflows/${{ inputs.script }}
+        ENV_ARGS: ${{ inputs.args }}
+      run: ${ENV_SCRIPT} ${ENV_ARGS}
+      shell: bash
+
+branding:
+  color: 'green'
+  icon: 'skip-forward'
